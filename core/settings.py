@@ -13,7 +13,7 @@ python manage.py loaddata subjects.json  # требует UTF-8, Django ищет
 ######## END dumpdata ########
 
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -113,9 +113,16 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+# Папки из которых доставать статические фалы, автоматически берет из Приложение/Статик
+# STATICFILES_DIRS = (
+#     BASE_DIR / "courses/static",
+#     BASE_DIR / "Еще какая то папка ",
+# )
+# находится место назначения, куда копируются статические файлы и откуда они обслуживаются при развертывании приложения Django.
+STATIC_ROOT = BASE_DIR / "staticfolder"
+
+STATIC_URL = 'urlstatic/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
