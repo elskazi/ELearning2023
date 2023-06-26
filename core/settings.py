@@ -12,6 +12,13 @@ python manage.py dumpdata courses --indent=2 --output=courses/fixtures/subjects.
 python manage.py loaddata subjects.json  # требует UTF-8, Django ищет файлы в каталоге fixtures/, можно изменить
 ######## END dumpdata ########
 
+
+Перетаскивание модулей и курсов
+pip install django-braces
+
+Добавление регистрации студентов
+python manage.py startapp students
+
 """
 import os
 from pathlib import Path
@@ -40,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'students.apps.StudentsConfig',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +75,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'builtins': ['courses.templatetags.course'],  # от строго
         },
     },
 ]
@@ -130,5 +139,5 @@ STATIC_URL = 'urlstatic/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Раздача медиафайлов
-MEDIA_URL = 'media/'             #  базовый URL-адрес, используемый для раздачи медиафайлов
+MEDIA_URL = 'media/'  # базовый URL-адрес, используемый для раздачи медиафайлов
 MEDIA_ROOT = BASE_DIR / 'media'  # локальный путь, по которому они находятся

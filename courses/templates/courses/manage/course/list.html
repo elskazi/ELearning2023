@@ -1,21 +1,28 @@
 {% extends "base.html" %}
-{% block title %}Мой курс{% endblock %}
+
+{% block title %}My courses{% endblock %}
+
 {% block content %}
-    <h1>Мой курс</h1>
-    <div class="module">
-        {% for course in object_list %}
-            <div class="course-info">
-                <h3>{{ course.title }}</h3>
-                <p>
-                    <a href="{% url "course_edit" course.id %}">Изменить</a>
-                    <a href="{% url "course_delete" course.id %}">Удалить</a>
-                </p>
-            </div>
-        {% empty %}
-            <p>У вас нет курсов, создавайте!</p>
-        {% endfor %}
+  <h1>My courses</h1>
+  <div class="module">
+    {% for course in object_list %}
+      <div class="course-info">
+        <h3>{{ course.title }}</h3>
         <p>
-            <a href="{% url "course_create" %}" class="button">Создать курс</a>
+          <a href="{% url "course_edit" course.id %}">Edit</a>
+          <a href="{% url "course_delete" course.id %}">Delete</a>
+          <a href="{% url "course_module_update" course.id %}">Edit modules</a>
+          {% if course.modules.count > 0 %}
+            <a href="{% url "module_content_list" course.modules.first.id %}">
+            Manage contents</a>
+          {% endif %}
         </p>
-    </div>
+      </div>
+    {% empty %}
+      <p>You haven't created any courses yet.</p>
+    {% endfor %}
+    <p>
+      <a href="{% url "course_create" %}" class="button">Create new course</a>
+    </p>
+  </div>
 {% endblock %}
