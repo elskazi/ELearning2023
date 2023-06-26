@@ -8,6 +8,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from .fields import OrderField  # Добавление упорядочивания
 
+#Прорисовка разных типов содержимого
+from django.template.loader import render_to_string
+
+
 '''
 Структура обучения: Предмет - Курс - Модуль - Контунт 
 Subject 1
@@ -22,8 +26,6 @@ Subject 1
 '''
 
 ''' предмет '''
-
-
 class Subject(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
@@ -37,7 +39,6 @@ class Subject(models.Model):
 
 ''' курс '''
 
-
 class Course(models.Model):
     owner = models.ForeignKey(User,
                               related_name='courses_created',
@@ -49,6 +50,8 @@ class Course(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
     overview = models.TextField()  # краткого обзора курса
     created = models.DateTimeField(auto_now_add=True)
+    # Для Студентов
+    students = models.ManyToManyField(User, related_name='courses_joined', blank=True)
 
     class Meta:
         ordering = ['-created']
@@ -102,6 +105,11 @@ class ItemBase(models.Model):
 
     def __str__(self):
         return self.title
+
+    def render(self):
+        return render_to_string(
+            f'courses/content/{self._meta.model_name}.html',
+            {'item': self})
 
 
 class Text(ItemBase):

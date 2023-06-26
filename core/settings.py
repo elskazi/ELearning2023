@@ -19,9 +19,20 @@ pip install django-braces
 Добавление регистрации студентов
 python manage.py startapp students
 
+приложение Django, которое позволяет вставлять видео в шаблоны из таких источников, как YouTube и Vimeo, просто предоставляя их общедоступный URL-адрес
+pip install django-embed-video
+
+##### Использование кеш-фреймворка #####
+# Установка образа Memcached платформы Docker
+docker pull memcached
+docker run -it --rm --name memcached -p 11211:11211 memcached -m 64
 """
 import os
 from pathlib import Path
+# перенаправлять студентов на этот URL-адрес при входе на платформу
+from django.urls import reverse_lazy
+
+LOGIN_REDIRECT_URL = reverse_lazy('student_course_list')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'students.apps.StudentsConfig',
+    'embed_video',  # pip install django-embed-video
 ]
 
 MIDDLEWARE = [
