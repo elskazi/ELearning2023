@@ -26,6 +26,32 @@ pip install django-embed-video
 # Установка образа Memcached платформы Docker
 docker pull memcached
 docker run -it --rm --name memcached -p 11211:11211 memcached -m 64
+# Установка привязки Python к Memcached
+pip install pymemcache==3.5.2
+
+# Django Debug Toolbar
+pip install django-debug-toolbar
+
+# Использование сайтового кеша
+pip install redis
+docker run -it --rm --name redis -p 6379:6379 redis
+
+Отслеживание сервера Redis с помощью приложения Django Redisboard
+pip install django-redisboard
+pip install attrs  # Нужно для django-redisboard
+python manage.py migrate redisboard
+http://127.0.0.1:8000/admin/redisboard/redisserver/add/   # Управление Django Redisboard
+
+Вводим Redis  и ссылка  redis://localhost:6379/0
+
+# Django REST framework
+pip install djangorestframework
+curl http://127.0.0.1:8000/api/subjects/ | json_pp
+
+Потребление RESTful API
+pip install requests
+
+
 """
 import os
 from pathlib import Path
@@ -60,12 +86,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'students.apps.StudentsConfig',
     'embed_video',  # pip install django-embed-video
+    'debug_toolbar',  # Django Debug Toolbar
+    'redisboard',  # Отслеживание сервера Redis с помощью приложения Django Redisboard
+    'rest_framework',  # Django REST framework
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Django Debug Toolbar
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware', # Использование сайтового кеша
     'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware', # Использование сайтового кеша
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -153,3 +185,38 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Раздача медиафайлов
 MEDIA_URL = 'media/'  # базовый URL-адрес, используемый для раздачи медиафайлов
 MEDIA_ROOT = BASE_DIR / 'media'  # локальный путь, по которому они находятся
+
+''' Меню отладочных инструментов Django будет отображаться только в том
+случае, если ваш IP-адрес соответствует записи в настроечном параметре
+INTERNAL_IPS.  '''
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+# Использование сайтового кеша
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 60 * 15  # 15 минут
+CACHE_MIDDLEWARE_KEY_PREFIX = 'educa'
+
+# кеш-сервер Memcached
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+#         'LOCATION': '127.0.0.1:11211',
+#     }
+# }
+
+# Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379',
+    }
+}
+
+# Django REST framework
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
